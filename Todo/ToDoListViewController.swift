@@ -21,8 +21,7 @@ class ToDoListViewController: UITableViewController {
     
     }
 
-    let itemArray = ["Find Mike","Buy Eggos","Destory Demogorgon"]
-
+    var itemArray = ["Find Mike","Buy Eggos","Destory Demogorgon"]
 
 
     // MARK: - Table view data source
@@ -57,12 +56,48 @@ class ToDoListViewController: UITableViewController {
         
     }
 
+    //MARK - Add New Items through Alert View
+    @IBAction func addItem(_ sender: UIBarButtonItem) {
+        var texField = UITextField()
+        let alert = UIAlertController(title: "Add New ToDo Items", message: "", preferredStyle: .alert)
+        
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create new item"
+            print(alertTextField.text)
+            print("trigger alert.addTextField")
+            texField = alertTextField // pass local textField to outside this closure
+        }
+        
+        //MARK Action for AlerView
+        //use completionHanddler to include codes will be executed after clicking the action button
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            //action after tapping the Add button
+            print("trigger aler action after tapping action button \(texField.text)")
+            
+            /* textField.text actually would't never = nil. The default would be "" if user didn't put in any. So we can safely force unwrp. We can add more checking code to prevent the action from going forwards
+             
+             nil coalescing operator
+             An operator (??) placed between two values, a ?? b, that unwraps an optional a if it contains a value, or returns a default value b if a is nil. ( if a is nil, then default value is b)
+             
+         */
+            self.itemArray.append(texField.text!)
+//            self.itemArray.append(texField.text ?? "Default Value")
+            print(self.itemArray)
+            self.tableView.reloadData()
+        }
+
+        alert.addAction(action) // this will add action button in alert view
+        present(alert, animated: true, completion: nil)
+    }
+    
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
     }
+ 
     */
 
     /*
