@@ -10,62 +10,31 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
 
-//    var itemArray = ["Find Mike","Buy Eggos","Destory fire Demogorgon"]
 
-    // change from array of string to array of an object
     var itemArray = [Item]()
     
-    let defaults = UserDefaults.standard
+//    let defaults = UserDefaults.standard
     
+    //MARK : global dataFilePath
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        var newItem0 = Item()
+        let newItem0 = Item()
         newItem0.title = "Find Mike"
         itemArray.append(newItem0)
 
-        var newItem1 = Item()
+        let newItem1 = Item()
         newItem1.title = "Buy Eggos"
         itemArray.append(newItem1)
 
-        var newItem2 = Item()
+        let newItem2 = Item()
         newItem2.title = "Destory fire Demogorgon"
         itemArray.append(newItem2)
-//
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem2)
-//        itemArray.append(newItem1)
-//        itemArray.append(newItem1)
-//        itemArray.append(newItem1)
-//        itemArray.append(newItem1)
-//        itemArray.append(newItem1)
-//        itemArray.append(newItem1)
-//        itemArray.append(newItem1)
-//        itemArray.append(newItem1)
-
         
-//        itemArray = defaults.array(forKey: "ToDoListArray") as! [String]
-//        if let itemArray = defaults.array(forKey: "ToDoListArray") as? [String] {
-//        if let itemArray = defaults.object(forKey: "ToDoListArray") as? [String] {
-
-        if let itemArray = defaults.array(forKey: "ToDoListArray") as? [Item] {
-
-        self.itemArray = itemArray
-        }
+        loadItems()
     }
 
     // MARK: - Table view DataSource methods
@@ -109,16 +78,11 @@ class ToDoListViewController: UITableViewController {
         //toggle and update the .done property of the coresponding itemArray.row when tapping the row
 //        itemArray[indexPath.row].done = itemArray[indexPath.row].done ? false : true
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done 
-
-        
-        //MARK : how to show check-mark when user tapping the row ?
-        //toggle checkmark of the specific row that the user taps
-//        tableView.cellForRow(at: indexPath)?.accessoryType = tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark ? .none : .checkmark
-
+        saveItems()
         // refresh table to fix that bug
         print("&& didSelectRowAt got called and itemArray[indexPath.row].done is ",itemArray[indexPath.row].done, indexPath.row)
         tableView.deselectRow(at: indexPath, animated: true)
-        tableView.reloadData()
+//        tableView.reloadData()
 
     }
     
@@ -130,8 +94,6 @@ class ToDoListViewController: UITableViewController {
         
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Create new item"
-//            print(alertTextField.text)
-//            print("trigger alert.addTextField")
             texField = alertTextField // pass local textField to outside this closure
         }
         
@@ -139,7 +101,6 @@ class ToDoListViewController: UITableViewController {
         //use completionHanddler to include codes will be executed after clicking the action button
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             //action after tapping the Add button
-//            print("trigger aler action after tapping action button \(texField.text)")
             
             /* textField.text actually would't never = nil. The default would be "" if user didn't put in any. So we can safely force unwrp. We can add more checking code to prevent the action from going forwards
              
@@ -151,21 +112,43 @@ class ToDoListViewController: UITableViewController {
 //            self.itemArray.append(texField.text!)
 //            self.itemArray.append(texField.text ?? "Default Value")
             
-            var newItem = Item()
+            let newItem = Item()
             newItem.title = texField.text!
             self.itemArray.append(newItem)
             //store new item to userDefaults, both setValue() and set() work.
-//            self.defaults.setValue(self.itemArray, forKey: "ToDoListArray")
-            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
-        
+//            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
 
-//            print(self.itemArray)
-            self.tableView.reloadData()
+            self.saveItems() //save to custom Plist
+//            self.tableView.reloadData()
         }
 
         alert.addAction(action) // this will add action button in alert view
         present(alert, animated: true, completion: nil)
     }
     
+    //MARK - Model Manupulation Methods
+    
+    func saveItems() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("$$$ Error: Encoding Item array failed, \(error)")
+        }
+        
+        self.tableView.reloadData()
+    }
    
+    func loadItems() {
+        //try? turn the result of Data() method into optional, so we use optional binding to unwrap it safely
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+            itemArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print("$$$ Error: Decoding Item array failed, \(error)")
+            }
+        }
+    }
 }
