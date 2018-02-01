@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import CoreData
 class ToDoListViewController: UITableViewController {
 
 
@@ -15,35 +15,22 @@ class ToDoListViewController: UITableViewController {
     
 //    let defaults = UserDefaults.standard
     
-    //MARK : global dataFilePath
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    //MARK : global variables
+
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let newItem0 = Item()
-        newItem0.title = "Find Mike"
-        itemArray.append(newItem0)
+        print("&&& where is our data",FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
 
-        let newItem1 = Item()
-        newItem1.title = "Buy Eggos"
-        itemArray.append(newItem1)
-
-        let newItem2 = Item()
-        newItem2.title = "Destory fire Demogorgon"
-        itemArray.append(newItem2)
         
         loadItems()
     }
 
     // MARK: - Table view DataSource methods
 
-//    override func numberOfSections(in tableView: UITableView) -> Int {
-//        // #warning Incomplete implementation, return the number of sections
-//        return 1
-//    }
-//
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
@@ -59,11 +46,6 @@ class ToDoListViewController: UITableViewController {
         // Configure the cell...
         let item = itemArray[indexPath.row]
         cell.textLabel?.text = item.title
-        
-        
-        //showing checkmark of the cell based on the "done" property of itemArray's element . here uses ternary operator
-        // value = condition ? valueIfTrue : valueIfFalse
-        
         cell.accessoryType = item.done ? .checkmark : .none
         
         return cell
@@ -73,21 +55,25 @@ class ToDoListViewController: UITableViewController {
     //MARK : TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        //MARK: Toggle check-mark of the row when user tapping that row. Also store that information backto arrayItem .
         
-        //toggle and update the .done property of the coresponding itemArray.row when tapping the row
-//        itemArray[indexPath.row].done = itemArray[indexPath.row].done ? false : true
-        itemArray[indexPath.row].done = !itemArray[indexPath.row].done 
-        saveItems()
+        //any updates to properties of elements in itemArray will pass to context. done&title are the properties for Item entity
+        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+//        itemArray[indexPath.row].setValue("completed", forKey: "title")
+        
+    //MARK - delete items.order matters.remove item in context before that item got removed from itemArray
+//        context.delete(itemArray[indexPath.row])
+//        itemArray.remove(at: indexPath.row)
+
+        
+        saveItems() // persist data and reload viewTable
         // refresh table to fix that bug
         print("&& didSelectRowAt got called and itemArray[indexPath.row].done is ",itemArray[indexPath.row].done, indexPath.row)
         tableView.deselectRow(at: indexPath, animated: true)
-//        tableView.reloadData()
 
     }
     
 
-    //MARK - Alert View : Add New Items through Alert View
+    //MARK - Add New Items
     @IBAction func addItem(_ sender: UIBarButtonItem) {
         var texField = UITextField()
         let alert = UIAlertController(title: "Add New ToDo Items", message: "", preferredStyle: .alert)
@@ -97,29 +83,16 @@ class ToDoListViewController: UITableViewController {
             texField = alertTextField // pass local textField to outside this closure
         }
         
-        //MARK Action for AlerView
-        //use completionHanddler to include codes will be executed after clicking the action button
+        //MARK Action for UIAlert,what will ahppen once user clicks the Add Item
+
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
-            //action after tapping the Add button
             
-            /* textField.text actually would't never = nil. The default would be "" if user didn't put in any. So we can safely force unwrp. We can add more checking code to prevent the action from going forwards
-             
-             nil coalescing operator
-             An operator (??) placed between two values, a ?? b, that unwraps an optional a if it contains a value, or returns a default value b if a is nil. ( if a is nil, then default value is b)
-             
-         */
-
-//            self.itemArray.append(texField.text!)
-//            self.itemArray.append(texField.text ?? "Default Value")
-            
-            let newItem = Item()
+            let newItem = Item(context: self.context) //instance a NSmanagedObject,a class
             newItem.title = texField.text!
+            newItem.done = false //default is not done.
             self.itemArray.append(newItem)
-            //store new item to userDefaults, both setValue() and set() work.
-//            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
-
-            self.saveItems() //save to custom Plist
-//            self.tableView.reloadData()
+//            self.tableView.reloadData() //saveItems() includes reloadData()
+            self.saveItems() //save changes in context to Persistant Store
         }
 
         alert.addAction(action) // this will add action button in alert view
@@ -128,27 +101,24 @@ class ToDoListViewController: UITableViewController {
     
     //MARK - Model Manupulation Methods
     
+    // this will commit unsaved changes in context to store
     func saveItems() {
-        let encoder = PropertyListEncoder()
         do {
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            try context.save()
         } catch {
-            print("$$$ Error: Encoding Item array failed, \(error)")
+            print("$$$ Error saving context,\(error)")
         }
         
         self.tableView.reloadData()
     }
    
     func loadItems() {
-        //try? turn the result of Data() method into optional, so we use optional binding to unwrap it safely
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-            itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("$$$ Error: Decoding Item array failed, \(error)")
-            }
+        // Item.fetchRequest() was auto created by Swift, it return a NSFetchRequest<Item>, and we need to specify that type when passing it to the constant
+        let reqeust : NSFetchRequest<Item> = Item.fetchRequest()
+        do {
+            itemArray = try context.fetch(reqeust)
+        } catch {
+            print("Error fetching data from context :\(error)")
         }
     }
 }
