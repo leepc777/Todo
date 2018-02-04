@@ -173,7 +173,7 @@ extension ToDoListViewController : UISearchBarDelegate {
  
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        print("@@@ serachBar textDidChange func got call and text is\(searchBar.text)")
+//        print("@@@ serachBar textDidChange func got call and text is\(searchBar.text)")
         if searchBar.text?.count == 0 {
 //        if searchBar.text == "" {
 
