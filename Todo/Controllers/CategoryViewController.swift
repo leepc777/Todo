@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import SwipeCellKit
 class CategoryViewController: UITableViewController {
 
     var categoryArray = [Category]()
@@ -16,9 +17,14 @@ class CategoryViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadData()
+        tableView.rowHeight = 80.0
 
     }
-
+    
+    //MARK: write unsaved changes in context to store before leaving CategoryVC.
+    override func viewWillDisappear(_ animated: Bool) {
+        saveData()
+    }
 
     //MARK: - Add New Categories
     @IBAction func addButton(_ sender: UIBarButtonItem) {
@@ -48,8 +54,9 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as! SwipeTableViewCell
         cell.textLabel?.text = categoryArray[indexPath.row].name
+        cell.delegate = self
         return cell
     }
     
@@ -91,3 +98,35 @@ class CategoryViewController: UITableViewController {
     }
     
 }
+
+//MARK: - Swipe Cell Delegate methods
+extension CategoryViewController:SwipeTableViewCellDelegate {
+    
+    //swipe and click icon to delete
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        guard orientation == .right else { return nil }
+        
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+            // handle action by updating model with deletion
+            self.context.delete(self.categoryArray[indexPath.row])
+            self.categoryArray.remove(at: indexPath.row)
+//            self.saveData() // move this viewWillDisappear, it will fail after adding extention destrutive style
+//            self.loadData() //not need it because editActionsOptionsForRowAt refresh table
+        }
+        
+        // customize the action appearance
+        deleteAction.image = UIImage(named: "DeleteIcon")
+        
+        return [deleteAction]
+    }
+    
+    // to swipe to left to delete without confirmation.
+    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeTableOptions {
+        var options = SwipeTableOptions()
+        options.expansionStyle = .destructive
+        options.transitionStyle = .border
+        return options
+    }
+    
+}
+
