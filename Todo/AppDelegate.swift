@@ -20,6 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
+        print("***** save data to store when applicationWillTerminate ")
+
         self.saveContext()
     }
     

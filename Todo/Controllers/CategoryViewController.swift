@@ -8,8 +8,9 @@
 
 import UIKit
 import CoreData
-import SwipeCellKit
-class CategoryViewController: UITableViewController {
+//import SwipeCellKit
+
+class CategoryViewController: SwipeTableViewController {
 
     var categoryArray = [Category]()
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -17,13 +18,13 @@ class CategoryViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadData()
-        tableView.rowHeight = 80.0
+//        tableView.rowHeight = 80.0
 
     }
     
     //MARK: write unsaved changes in context to store before leaving CategoryVC.
     override func viewWillDisappear(_ animated: Bool) {
-        saveData()
+//        saveData() //actually AppDelegate will do the saving before app closing
     }
 
     //MARK: - Add New Categories
@@ -48,15 +49,26 @@ class CategoryViewController: UITableViewController {
         print("&&&& current category array is :\(categoryArray)")
     }
     
+    
+    //MARK: UnDo deletion
+    // current deletion will remove managedobject from context and array. So there is no way I can put it back to context and array unless we create an array to save the deleted items. Or unless we can read out the store to overwrite context and array.
+    
+    @IBAction func undoDele(_ sender: Any) {
+        context.rollback()
+        loadData()
+        print("*****  trigger context.rollback()")
+    }
+    
     //MARK: - TableView DataSource Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoryArray.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as! SwipeTableViewCell
-        cell.textLabel?.text = categoryArray[indexPath.row].name
-        cell.delegate = self
+        
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        cell.textLabel?.text = categoryArray[indexPath.row].name ?? "no Category name added yet"
+        
         return cell
     }
     
@@ -97,8 +109,18 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
     }
     
+    //MARK: - Delete Data by Swipe
+    
+    override func updateModel(at indexPath: IndexPath) {
+        self.context.delete(self.categoryArray[indexPath.row])
+        self.categoryArray.remove(at: indexPath.row)
+        print("current VC is \(self) doing updateModel overrided in CategoryVC")
+
+    }
+    
 }
 
+/*
 //MARK: - Swipe Cell Delegate methods
 extension CategoryViewController:SwipeTableViewCellDelegate {
     
@@ -130,3 +152,4 @@ extension CategoryViewController:SwipeTableViewCellDelegate {
     
 }
 
+ */
