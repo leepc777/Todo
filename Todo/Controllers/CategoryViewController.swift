@@ -19,13 +19,20 @@ class CategoryViewController: SwipeTableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.separatorStyle = .none
         loadData()
-//        tableView.rowHeight = 80.0
 
     }
     
     //MARK: write unsaved changes in context to store before leaving CategoryVC.
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        navigationController?.navigationBar.barTintColor = FlatSkyBlue()
+        navigationController?.navigationBar.tintColor = ContrastColorOf(FlatSkyBlue(), returnFlat: true)
+//        navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : ContrastColorOf(FlatSkyBlue(), returnFlat: true)]
+        navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : ContrastColorOf(FlatSkyBlue(), returnFlat: true)]
+//        loadData()
+    }
     override func viewWillDisappear(_ animated: Bool) {
 //        saveData() //actually AppDelegate will do the saving before app closing
     }
@@ -36,13 +43,18 @@ class CategoryViewController: SwipeTableViewController {
         var textField = UITextField()
         
         alert.addTextField { (alertTextField) in
+            alertTextField.keyboardType = UIKeyboardType.alphabet
+            alertTextField.autocorrectionType = UITextAutocorrectionType.yes
             alertTextField.placeholder = " Create new Category"
             textField = alertTextField
         }
         
         let action = UIAlertAction(title: "Add Category", style: .default) { (action) in
+            
             let newCategory = Category(context: self.context)
             newCategory.name = textField.text
+            newCategory.color = UIColor.randomFlat.hexValue()
+
             self.categoryArray.append(newCategory)
             self.saveData() // store new Category to store and reload TableView
             
@@ -71,7 +83,9 @@ class CategoryViewController: SwipeTableViewController {
         
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         cell.textLabel?.text = categoryArray[indexPath.row].name ?? "no Category name added yet"
-        cell.backgroundColor = UIColor.randomFlat
+        cell.backgroundColor = UIColor(hexString: categoryArray[indexPath.row].color ?? "A9B9FA")
+//        cell.backgroundColor = FlatOrange()
+        cell.textLabel?.textColor = ContrastColorOf(cell.backgroundColor!, returnFlat: true)
         
         return cell
     }
@@ -79,6 +93,7 @@ class CategoryViewController: SwipeTableViewController {
     //MARK: - TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     //MARK: Prepare for Segue

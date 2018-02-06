@@ -8,11 +8,12 @@
 
 import UIKit
 import CoreData
+import ChameleonFramework
 class ToDoListViewController: SwipeTableViewController {
     @IBOutlet weak var itemSearchBar: UISearchBar!
     
 /*
- after set selectedCategory in prepare for segue in CategoryVC, load all Items from context to itemArray and reload ViewTable. this insure we only fetch after getting new data.we ogriginal did it in ViewDidLoad
+ after set selectedCategory in prepare for segue in CategoryVC, load all Items which has the same Category in context to itemArray and reload ViewTable. We can also do it in ViewDidLoad
 */
     
     var itemArray = [Item]()
@@ -21,31 +22,70 @@ class ToDoListViewController: SwipeTableViewController {
         didSet{
             loadItems()
         }
+        
     }
     
-//    let defaults = UserDefaults.standard
     
     //MARK : global variables
 
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
+    @IBOutlet weak var searchBar: UISearchBar!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         itemSearchBar.delegate = self
+        
+        //this will carash because navigationController is not avaiable when viewDIdLoad
+        
+//        if let colorOfCategory = UIColor(hexString:(selectedCategory?.color)!) {
+//
+//            title = selectedCategory!.name
+//
+//            guard let navBar = navigationController?.navigationBar else {fatalError("Navigation Controller doesn't exist")}
+//
+//            navBar.barTintColor = colorOfCategory
+//            navBar.tintColor = colorOfCategory
+//            searchBar.barTintColor = colorOfCategory
+//
+//        }
+
+        
         print("&&& where is our data",FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
 
-//        tableView.rowHeight = 80.0
-        
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        
+        guard let colorOfCategory = UIColor(hexString:(selectedCategory?.color)!) else {fatalError("colorOfCategory is NIL")}
+//            let colorOfCategory = FlatSkyBlue()
+            title = selectedCategory!.name
+            navColor(with: colorOfCategory)
+       
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
-//        print("***** save data to store when viewWillDisappear in ToDolist")
-//        saveItems() // ok to save it whenever VC close, but AppDelegate will save the unsaved changes in context to store before App closing. So this step is not necessary.
+        //        print("***** save data to store when viewWillDisappear in ToDolist")
+        //        saveItems() // ok to save it whenever VC close, but AppDelegate will save the unsaved changes in context to store before App closing. So this step is not necessary.
+        
+//        navColor(with: FlatSkyBlue())
     }
+    
+
+    
+    //MARK: - setup color for Navigation Bar
+    func navColor(with colorOfCategory:UIColor) {
+        guard let navBar = navigationController?.navigationBar else {fatalError("Navigation Controller doesn't exist")}
+        
+        navBar.barTintColor = colorOfCategory
+        navBar.tintColor = ContrastColorOf(colorOfCategory, returnFlat: true)
+        navBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : ContrastColorOf(colorOfCategory, returnFlat: true)]
+        searchBar.barTintColor = colorOfCategory
+
+    }
+
     
     // MARK: - Table view DataSource methods
 
@@ -67,6 +107,11 @@ class ToDoListViewController: SwipeTableViewController {
         // Configure the cell...
         let item = itemArray[indexPath.row]
         cell.textLabel?.text = item.title
+        let colorOfCategory = UIColor(hexString: (selectedCategory?.color)!)
+//        cell.backgroundColor = FlatSkyBlue().darken(byPercentage:
+        cell.backgroundColor = colorOfCategory?.darken(byPercentage:
+        CGFloat(indexPath.row)/CGFloat(itemArray.count)/CGFloat(4))
+        cell.textLabel?.textColor = ContrastColorOf(cell.backgroundColor!, returnFlat: true)
         cell.accessoryType = item.done ? .checkmark : .none
         
         return cell
@@ -96,6 +141,9 @@ class ToDoListViewController: SwipeTableViewController {
         
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Create new item"
+            alertTextField.keyboardType = UIKeyboardType.alphabet
+            alertTextField.autocorrectionType = UITextAutocorrectionType.yes
+
             textField = alertTextField
         }
         
@@ -104,11 +152,12 @@ class ToDoListViewController: SwipeTableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
             let newItem = Item(context: self.context) //instance a NSmanagedObject,a class
+            
             newItem.parentCategory = self.selectedCategory
             newItem.title = textField.text!
             newItem.done = false //default is not done.
+            
             self.itemArray.append(newItem)
-//            self.tableView.reloadData() //saveItems() includes reloadData()
             self.saveItems() //save changes in context to Persistant Store
         }
 
@@ -137,7 +186,7 @@ class ToDoListViewController: SwipeTableViewController {
     }
    
     
-    // Read data from store to itemArray,default inputs is reading out All Item type
+    // Read data from store to itemArray,default inputs is reading out All Items belonging to same Category selectedCategory
     func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest(), predicate:NSPredicate?=nil) {
         
         let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", (selectedCategory?.name)!)
@@ -178,22 +227,11 @@ extension ToDoListViewController : UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
 
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
-        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true),NSSortDescriptor(key: "done", ascending: true)]
-        print("!!! searchBarSearchButtonClicked got call and request is \(request)")
-
-        loadItems(with: request, predicate:predicate)
-    
         if searchBar.text == "" {
             searchBar.resignFirstResponder()
             loadItems()
         }
 
-
-//        tableView.reloadData() //moved to loadItems()
-//        print("%%% search text is :\(searchBar.text)")
-        
     }
  
 
@@ -207,17 +245,17 @@ extension ToDoListViewController : UISearchBarDelegate {
             DispatchQueue.main.async { //
                searchBar.resignFirstResponder()
             }
-            
-
-
 
         }
-//        else {
-//            let request : NSFetchRequest<Item> = Item.fetchRequest()
-//            request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-//            request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true),NSSortDescriptor(key: "done", ascending: true)]
-//            loadItems(with: request)
-//
-//        }
+        else {
+            let request : NSFetchRequest<Item> = Item.fetchRequest()
+            let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+            request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true),NSSortDescriptor(key: "done", ascending: true)]
+            print("!!! searchBarSearchButtonClicked got call and request is \(request)")
+            
+            loadItems(with: request, predicate:predicate)
+            
+        }
+        
     }
 }
