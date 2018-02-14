@@ -16,6 +16,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
+        //Add two Bar Buttons to reuse the same Navigation controller
+        
+        if let tabBarController = window?.rootViewController as? UITabBarController {
+            let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyBoard.instantiateViewController(withIdentifier: "NavController")
+            vc.tabBarItem = UITabBarItem(title: "ToWhere", image: UIImage(named:"car") , tag: 1)
+            tabBarController.viewControllers?.append(vc)
+        }
+        
         return true
     }
 

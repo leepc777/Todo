@@ -17,9 +17,19 @@ class CategoryViewController: SwipeTableViewController {
     var categoryArray = [Category]()
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
+    var isDriving : Bool!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         loadData()
+        
+        switch navigationController?.tabBarItem.tag {
+        case 1? :
+            isDriving = true
+        default :
+            isDriving = false
+        }
+
 
     }
     
@@ -31,6 +41,8 @@ class CategoryViewController: SwipeTableViewController {
         navigationController?.navigationBar.tintColor = ContrastColorOf(FlatSkyBlue(), returnFlat: true)
 //        navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : ContrastColorOf(FlatSkyBlue(), returnFlat: true)]
         navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : ContrastColorOf(FlatSkyBlue(), returnFlat: true)]
+        
+        print("&&&&&&& the current Tab in Category List is \(navigationController?.tabBarItem.tag)")
 //        loadData()
     }
     override func viewWillDisappear(_ animated: Bool) {
@@ -96,7 +108,7 @@ class CategoryViewController: SwipeTableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    //MARK: Prepare for Segue
+    //MARK: Prepare for Segue , pass Selected Cateory object
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let nextVC = segue.destination as! ToDoListViewController
         guard let indexPath = tableView.indexPathForSelectedRow
@@ -106,6 +118,7 @@ class CategoryViewController: SwipeTableViewController {
                 
         }
         nextVC.selectedCategory = categoryArray[indexPath.row]
+        nextVC.isDriving = isDriving
     }
     
     //MARK: - Data Manipulation Methods

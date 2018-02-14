@@ -15,7 +15,12 @@ class ToDoListViewController: SwipeTableViewController {
 /*
  after set selectedCategory in prepare for segue in CategoryVC, load all Items which has the same Category in context to itemArray and reload ViewTable. We can also do it in ViewDidLoad
 */
-    
+    var isDriving : Bool? {
+        didSet {
+            print("@@@@@@@@@@@@  Driving Mode ? \(isDriving) $$$$$$$$$$$ ")
+        }
+    }
+
     var itemArray = [Item]()
     var selectedCategory : Category? {
         
@@ -29,6 +34,7 @@ class ToDoListViewController: SwipeTableViewController {
     //MARK : global variables
 
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
 
     @IBOutlet weak var searchBar: UISearchBar!
     
@@ -36,6 +42,8 @@ class ToDoListViewController: SwipeTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print("&&&&&&& the current Tab in Item list is \(navigationController?.tabBarItem.tag) \(tabBarItem.tag)")
+
         itemSearchBar.delegate = self
         
         //this will carash because navigationController is not avaiable when viewDIdLoad
