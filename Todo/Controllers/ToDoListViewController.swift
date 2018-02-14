@@ -113,7 +113,6 @@ class ToDoListViewController: SwipeTableViewController {
         CGFloat(indexPath.row)/CGFloat(itemArray.count)/CGFloat(4))
         cell.textLabel?.textColor = ContrastColorOf(cell.backgroundColor!, returnFlat: true)
         cell.accessoryType = item.done ? .checkmark : .none
-        
         return cell
     }
     
@@ -137,6 +136,8 @@ class ToDoListViewController: SwipeTableViewController {
     //MARK: - Add New Items throught Alert View
     @IBAction func addItem(_ sender: UIBarButtonItem) {
         var textField = UITextField()
+        
+        //setup alerView
         let alert = UIAlertController(title: "Add New ToDo Items", message: "", preferredStyle: .alert)
         
         alert.addTextField { (alertTextField) in
@@ -147,7 +148,7 @@ class ToDoListViewController: SwipeTableViewController {
             textField = alertTextField
         }
         
-        //MARK Action for UIAlert,what will ahppen once user clicks the Add Item
+        //MARK Action for UIAlert,what will ahppen once user clicks Add Item
 
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
@@ -186,10 +187,14 @@ class ToDoListViewController: SwipeTableViewController {
     }
    
     
-    // Read data from store to itemArray,default inputs is reading out All Items belonging to same Category selectedCategory
+    // Read data from store to itemArray,default inputs is reading out All Items belonging to same selectedCategory
     func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest(), predicate:NSPredicate?=nil) {
         
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", (selectedCategory?.name)!)
+        //  item has parentCategory property which is a Cateory Type
+//        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", (selectedCategory?.name)!)
+        
+        let categoryPredicate = NSPredicate(format: "parentCategory == %@", selectedCategory!)
+
         
         
         //optional binding to handle nil at predicate
