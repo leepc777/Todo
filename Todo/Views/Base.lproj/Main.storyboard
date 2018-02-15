@@ -7,6 +7,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -57,11 +58,61 @@
                     <connections>
                         <outlet property="itemSearchBar" destination="G4N-O6-pME" id="63k-hT-agq"/>
                         <outlet property="searchBar" destination="G4N-O6-pME" id="Ubo-dK-rcJ"/>
+                        <segue destination="CHs-ZY-4xw" kind="show" identifier="toMap" id="47Z-Eg-d05"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AUJ-uU-xHZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1799.2" y="115.59220389805098"/>
+        </scene>
+        <!--Map View Controller-->
+        <scene sceneID="fMb-bQ-QSN">
+            <objects>
+                <viewController title="Map" id="CHs-ZY-4xw" userLabel="Map View Controller" customClass="MapViewController" customModule="Todo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="gwn-0Z-y4W">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="vU2-Z6-NJA">
+                                <rect key="frame" x="0.0" y="116" width="375" height="551"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ObV-jI-Hnd">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="0.0"/>
+                                        <subviews>
+                                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="fr4-DZ-nFb">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="0.0"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </searchBar>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Rsd-2S-M0D">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="551"/>
+                                        <subviews>
+                                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="id1-zH-Pnk">
+                                                <rect key="frame" x="0.0" y="0.0" width="375" height="551"/>
+                                            </mapView>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="vU2-Z6-NJA" secondAttribute="bottom" id="Jfy-X4-i58"/>
+                            <constraint firstItem="vU2-Z6-NJA" firstAttribute="leading" secondItem="rny-HB-lpe" secondAttribute="leading" id="MCr-0g-xHa"/>
+                            <constraint firstItem="vU2-Z6-NJA" firstAttribute="trailing" secondItem="rny-HB-lpe" secondAttribute="trailing" id="TWy-Nf-ywh"/>
+                            <constraint firstItem="vU2-Z6-NJA" firstAttribute="top" secondItem="rny-HB-lpe" secondAttribute="top" id="XI0-7k-rir"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="rny-HB-lpe"/>
+                    </view>
+                    <connections>
+                        <outlet property="mapView" destination="id1-zH-Pnk" id="bSz-u2-UWy"/>
+                        <outlet property="searchBar" destination="fr4-DZ-nFb" id="b8O-Pp-sM1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nlD-z1-znd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2541.5999999999999" y="115.59220389805098"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="2OO-Q2-iRG">

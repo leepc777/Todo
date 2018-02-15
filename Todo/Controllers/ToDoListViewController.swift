@@ -22,6 +22,7 @@ class ToDoListViewController: SwipeTableViewController {
     }
 
     var itemArray = [Item]()
+    var selectedItem : Item!
     var selectedCategory : Category? {
         
         didSet{
@@ -46,22 +47,11 @@ class ToDoListViewController: SwipeTableViewController {
 
         itemSearchBar.delegate = self
         
-        //this will carash because navigationController is not avaiable when viewDIdLoad
-        
-//        if let colorOfCategory = UIColor(hexString:(selectedCategory?.color)!) {
-//
-//            title = selectedCategory!.name
-//
-//            guard let navBar = navigationController?.navigationBar else {fatalError("Navigation Controller doesn't exist")}
-//
-//            navBar.barTintColor = colorOfCategory
-//            navBar.tintColor = colorOfCategory
-//            searchBar.barTintColor = colorOfCategory
-//
-//        }
 
         
         print("&&& where is our data",FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+
+        print(" &&&&&& viewDidLoad in List: \(isDriving) triggerd")
 
     }
 
@@ -71,14 +61,21 @@ class ToDoListViewController: SwipeTableViewController {
 //            let colorOfCategory = FlatSkyBlue()
             title = selectedCategory!.name
             navColor(with: colorOfCategory)
-       
+        
+        loadItems()
+        tableView.reloadData()
+
+        print("&&&&&& viewWillAppear in List:\(isDriving) triggerd")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         //        print("***** save data to store when viewWillDisappear in ToDolist")
-        //        saveItems() // ok to save it whenever VC close, but AppDelegate will save the unsaved changes in context to store before App closing. So this step is not necessary.
+        // AppDelegate will save the unsaved changes in context to store before App closing.In order to keep data insync when changing tabs, I have to saveItems() before closing current tab and do loadItems()/tableView.reloadData() in coming tab
         
 //        navColor(with: FlatSkyBlue())
+        saveItems()
+        print("&&&&&& viewWillDisappear in List: \(isDriving) triggerd")
+
     }
     
 
@@ -106,9 +103,14 @@ class ToDoListViewController: SwipeTableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-//
-//        print("$$$ ToDoList cellForRowAtIndexPath got called at the indexPath :",indexPath.row,itemArray[indexPath.row].done )
+        
+        /* move this duplicate codes to the Super Class. So both Category/Item tables can share it with extra swipe to delete function
+         
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+
+        print("$$$ ToDoList cellForRowAtIndexPath got called at the indexPath :",indexPath.row,itemArray[indexPath.row].done )
+ 
+       */
         
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
@@ -132,13 +134,30 @@ class ToDoListViewController: SwipeTableViewController {
         //MARK: update TableView. any updates to properties of elements in itemArray will pass to context. done&title are the properties for Item entity
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
-        
+        selectedItem = itemArray[indexPath.row]
         saveItems() // persist data and reload viewTable
+        
         // refresh table to fix that bug
         print("&& didSelectRowAt in \(self)got called and itemArray[indexPath.row].done is ",itemArray[indexPath.row].done, indexPath.row)
+            
+
+        if isDriving! {
+            performSegue(withIdentifier: "toMap", sender: self)
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+
         tableView.deselectRow(at: indexPath, animated: true)
 
     }
+
+    
+    //MARK: Prepare for Segue , pass Selected Cateory object
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let nextVC = segue.destination as! MapViewController
+        nextVC.selectedCategory = selectedCategory
+        nextVC.selectedItem = selectedItem
+    }
+
     
 
     //MARK: - Add New Items throught Alert View
@@ -239,19 +258,20 @@ class ToDoListViewController: SwipeTableViewController {
 extension ToDoListViewController : UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-
+        
         if searchBar.text == "" {
-            searchBar.resignFirstResponder()
-            loadItems()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+                self.loadItems()
+            }
         }
-
     }
  
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
 //        print("@@@ serachBar textDidChange func got call and text is\(searchBar.text)")
-        if searchBar.text?.count == 0 {
-//        if searchBar.text == "" {
+//        if searchBar.text?.count == 0 {
+        if searchBar.text == "" {
 
             loadItems() //restore to the original table vew
             
