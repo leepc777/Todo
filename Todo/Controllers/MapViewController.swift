@@ -23,6 +23,7 @@ class MapViewController: UIViewController  {
     var geocoder = CLGeocoder()
     var activityIndicator = UIActivityIndicatorView()
     var selectedPin:MKPlacemark? = nil
+    var coordinate : CLLocationCoordinate2D!
 
     var selectedCategory : Category? {
         
@@ -128,10 +129,11 @@ class MapViewController: UIViewController  {
                 
                 //convert CLPlacemark to MKPlacemark
                 self.selectedPin = MKPlacemark(placemark: placemarks.first!)
-//                let mapItem = MKMapItem(placemark: self.selectedPin!)
+                let mapItem = MKMapItem(placemark: self.selectedPin!)
 //                let urlString = String(describing: mapItem.url)
+                
                 annotation.coordinate = location.coordinate
-                annotation.title = " To Here ?"
+                annotation.title = mapItem.name
                 annotation.subtitle = "Tap Car to open Map App"
                 annotations.append(annotation)
                 
@@ -176,9 +178,10 @@ extension MapViewController: MKMapViewDelegate {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
             pinView!.pinTintColor = UIColor.orange
             pinView!.canShowCallout = true
-            pinView!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
             
-            // create left button with car icon to open GPS
+            
+            //Setup up two buttons
+            pinView!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
             let smallSquare = CGSize(width: 30, height: 30)
             let button = UIButton(frame: CGRect(origin: CGPoint.zero, size: smallSquare))
             button.setBackgroundImage(UIImage(named: "car"), for: [])
@@ -186,7 +189,6 @@ extension MapViewController: MKMapViewDelegate {
             pinView?.leftCalloutAccessoryView = button
 
         }
-            
         else {
             pinView!.annotation = annotation
         }
@@ -196,22 +198,29 @@ extension MapViewController: MKMapViewDelegate {
 
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         print("&&&   mapView annotationView view got called")
+        
         if control == view.rightCalloutAccessoryView {
             print("$$$   control is at right")
-            let app = UIApplication.shared
-            if let toOpen = view.annotation?.subtitle! {
-                var stringURL = toOpen
-                if !stringURL.hasPrefix("http") {
-                    stringURL = "https://"+stringURL
-                }
-                guard let url = URL(string:stringURL) else {
-                    print("$$$  URL() return NIL")
-                    return
-                }
-                app.open(url, options: [:], completionHandler: nil)
-                
+//            let app = UIApplication.shared
+            
+            if let coordinate = view.annotation?.coordinate {
+                self.coordinate = coordinate
+                performSegue(withIdentifier: "goToCollection", sender: self)
             }
+            
+//            if let toOpen = view.annotation?.subtitle! {
+//                var stringURL = toOpen
+//                if !stringURL.hasPrefix("http") {
+//                    stringURL = "https://"+stringURL
+//                }
+//                guard let url = URL(string:stringURL) else {
+//                    print("$$$  URL() return NIL")
+//                    return
+//                }
+//                app.open(url, options: [:], completionHandler: nil)
+//            }
         }
+        
         if control == view.leftCalloutAccessoryView {
             print("$$$   control is at left")
             getDirections()
@@ -219,6 +228,12 @@ extension MapViewController: MKMapViewDelegate {
         
     }
     
+    //MARK: Prepare for Segue, pass selectedPin and coordinate to Collection View
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let nextVC = segue.destination as! CollectionViewController
+        nextVC.selectedItem = selectedItem
+        nextVC.coordinate = coordinate
+    }
     //MARK: call GPS function
     @objc func getDirections(){
         print("%%%   %%%% getDirections got called, selectedPin is \(selectedPin)")

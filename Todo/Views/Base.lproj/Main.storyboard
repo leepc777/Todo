@@ -108,11 +108,87 @@
                     <connections>
                         <outlet property="mapView" destination="id1-zH-Pnk" id="bSz-u2-UWy"/>
                         <outlet property="searchBar" destination="fr4-DZ-nFb" id="b8O-Pp-sM1"/>
+                        <segue destination="yHS-Nh-GfV" kind="show" identifier="goToCollection" id="sIv-uh-rMr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nlD-z1-znd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2541.5999999999999" y="115.59220389805098"/>
+        </scene>
+        <!--Collection View Controller-->
+        <scene sceneID="lam-Ve-iV6">
+            <objects>
+                <collectionViewController id="yHS-Nh-GfV" customClass="CollectionViewController" customModule="Todo" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="Ufc-WV-INv">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="1" minimumInteritemSpacing="1" id="zDx-0w-dfr">
+                            <size key="itemSize" width="200" height="200"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="collectionViewCell" id="zl8-7O-Hyf" customClass="CollectionViewCell" customModule="Todo" customModuleProvider="target">
+                                <rect key="frame" x="87.5" y="0.0" width="200" height="200"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                                    <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d1c-b4-P0r">
+                                            <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
+                                    </subviews>
+                                </view>
+                                <connections>
+                                    <outlet property="imageView" destination="d1c-b4-P0r" id="48E-dH-bLE"/>
+                                </connections>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="yHS-Nh-GfV" id="S0y-yU-p6d"/>
+                            <outlet property="delegate" destination="yHS-Nh-GfV" id="n5r-rg-wok"/>
+                        </connections>
+                    </collectionView>
+                    <connections>
+                        <segue destination="DBs-Zy-oIf" kind="show" identifier="goToPhoto" id="vet-Zv-hiZ"/>
+                    </connections>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="B0J-rx-zV7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3399" y="120"/>
+        </scene>
+        <!--Details View Controller-->
+        <scene sceneID="dhN-UX-iAM">
+            <objects>
+                <viewController id="DBs-Zy-oIf" userLabel="Details View Controller" customClass="DetailViewController" customModule="Todo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Wbp-EI-5Vw">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="hAJ-Tg-XRt">
+                                <rect key="frame" x="0.0" y="116" width="375" height="502"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="P8f-JD-fNV" firstAttribute="bottom" secondItem="hAJ-Tg-XRt" secondAttribute="bottom" id="AHq-XM-786"/>
+                            <constraint firstItem="hAJ-Tg-XRt" firstAttribute="leading" secondItem="P8f-JD-fNV" secondAttribute="leading" id="EEZ-0N-uUr"/>
+                            <constraint firstItem="hAJ-Tg-XRt" firstAttribute="trailing" secondItem="P8f-JD-fNV" secondAttribute="trailing" id="O0w-Jb-Rjl"/>
+                            <constraint firstItem="hAJ-Tg-XRt" firstAttribute="top" secondItem="P8f-JD-fNV" secondAttribute="top" id="q0E-I8-3kn"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="P8f-JD-fNV"/>
+                    </view>
+                    <connections>
+                        <outlet property="imageView" destination="hAJ-Tg-XRt" id="cKs-mU-zfI"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fsU-E7-i2L" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4199" y="116"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="2OO-Q2-iRG">
