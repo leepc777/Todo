@@ -1,5 +1,5 @@
 # Todo
-Being a busy full-time dad for a 6 years old first grader and a 4 years old preschooler, I need a simple App to maintain to-do-list. And also able to direct me to the locations in the lists by one click.  
+Being a busy full-time dad for a 6 years old first grader and a 4 years old preschooler, I need a simple App to maintain to-do-list. When switing to the driving mode, it can show me photos about the location in the list and driect me to the destination by one click.  
 
 
 ## Main Features
