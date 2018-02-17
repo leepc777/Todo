@@ -13,7 +13,7 @@ Being a busy full-time dad for a 6 years old first grader and a 4 years old pres
 * Store Data locally ( **Core Data** )
 * One click show items in MAP in Driving mode ( **MapKit** )
 * Show Flickr photos about the location. ( **REQS API Web services** )
-* Open MAP App(GPS) by one click to show direction for the location.
+* Open **MAP App** by one click to show direction for the location (GPS).
 
 ## Resource
 * Cocoapods ([here](https://cocoapods.org/))
