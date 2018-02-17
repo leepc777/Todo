@@ -8,12 +8,12 @@ Being a busy full-time dad for a 6 years old first grader and a 4 years old pres
 
 
 ## Main Goals:
-* Easily add/delete Category and Items. ( Swipe to delete)
-* One click to mark done and undone
-* Store Data locally ( **Core Data** )
-* One click show items in MAP in Driving mode ( **MapKit** )
+* Easily to add Category and Items. And **swipe** to delete.
+* Tap a item to mark done and undone
+* Store Data persistently ( **Core Data** )
+* In driving mode,tap the item to show it on a MAP ( **MapKit** )
 * Show Flickr photos about the location. ( **REQS API Web services** )
-* Open **MAP App** by one click to show direction for the location (GPS).
+* One tap to the location to open **MAP App** to show direction (GPS).
 
 ## Resource
 * Cocoapods ([here](https://cocoapods.org/))
