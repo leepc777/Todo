@@ -1,6 +1,11 @@
 # Todo
-Being a busy full-time dad for a 6 years old first grader and a 4 years old preschooler, I need a simple App to maintain to-do-list. When switing to the driving mode, it can show me photos about the location in the list and driect me to the destination by one click.  
+Being a busy full-time dad for a 6 years old first grader and a 4 years old preschooler, I need a simple App to maintain to-do-list. 
 
+And in order to drive kids to many places quickly and safely, I want a App quickly load in locations from the To-Do-List and show me the direction and traffic.
+
+So when switching to driving mode by tapping the tab with Car icon, user can tap locations in lists to show it on a map. Then user can tap the pin to open Map app to show the direction and traffic. In this way, users don’t need to open Map app separately and manually type in the destination anymore. 
+
+Also by tapping the pin on map, the info icon is to show Flickr photos about the location. User can edit those photos and store them persistently.
 
 ## Main Features
 * To Do list for Category and Items/location.
