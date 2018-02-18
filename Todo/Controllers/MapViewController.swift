@@ -17,7 +17,8 @@ import CoreLocation
 class MapViewController: UIViewController  {
     
     @IBOutlet weak var searchBar: UISearchBar!
-    
+
+
     @IBOutlet weak var mapView: MKMapView!
     
     var geocoder = CLGeocoder()
@@ -47,6 +48,10 @@ class MapViewController: UIViewController  {
         mapView.delegate = self
         
         title = selectedItem?.title
+        
+        searchBar.keyboardType = UIKeyboardType.alphabet
+        searchBar.autocorrectionType = UITextAutocorrectionType.yes
+
 //        print("selectedItem's title is \(selectedItem?.title)")
         
         showLocationOnMap(place:(selectedItem?.title)!)
@@ -58,6 +63,9 @@ class MapViewController: UIViewController  {
     extension MapViewController : UISearchBarDelegate {
         
         func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+            
+//            searchBar.keyboardType = UIKeyboardType.alphabet
+//            searchBar.autocorrectionType = UITextAutocorrectionType.yes
             
             if searchBar.text == "" {
                 DispatchQueue.main.async {
@@ -73,6 +81,9 @@ class MapViewController: UIViewController  {
     
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
             //        print("@@@ serachBar textDidChange func got call and text is\(searchBar.text)")
+//            searchBar.keyboardType = UIKeyboardType.alphabet
+//            searchBar.autocorrectionType = UITextAutocorrectionType.yes
+
             if searchBar.text?.count == 0 {
                 //        if searchBar.text == "" {
                 
