@@ -37,36 +37,20 @@ class CollectionViewController: UICollectionViewController {
 
         print("$$$$$$$$$ search button got tapped,view is \(view) and self.view \(self.view)")
 
-//        //MARK: - set up indicator
-//        activityIndicator.center = view.center
-//        activityIndicator.hidesWhenStopped = true
-//        activityIndicator.activityIndicatorViewStyle = .whiteLarge
-//        self.view.addSubview(activityIndicator)
-//        activityIndicator.startAnimating()
-//        UIApplication.shared.beginIgnoringInteractionEvents()
+        //MARK: - set up indicator
+        print("&&&&&&& Start activity Indicator at Searching")
+        activityIndicator.center = view.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = .whiteLarge
+        self.view.addSubview(activityIndicator)
+        activityIndicator.startAnimating()
+        UIApplication.shared.beginIgnoringInteractionEvents()
+        editButtonItem.isEnabled = false
 
-//        performUIUpdatesOnMain {
-//            self.urlArray = PhotoLib.getPhotoURLs(lat: self.coordinate.latitude, lon: self.coordinate.longitude)
-//            self.removePhotos()
-//            self.getImgsFromURLs()
-//
-//            //stop indicator after view appear
-//            self.activityIndicator.stopAnimating()
-//            UIApplication.shared.endIgnoringInteractionEvents()
-//        }
-        
-        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
-            
-            performUIUpdatesOnMain {
-            //MARK: - set up indicator
-            self.activityIndicator.center = self.view.center
-            self.activityIndicator.hidesWhenStopped = true
-            self.activityIndicator.activityIndicatorViewStyle = .whiteLarge
-            self.view.addSubview(self.activityIndicator)
-            self.activityIndicator.startAnimating()
-            UIApplication.shared.beginIgnoringInteractionEvents()
-            }
-            
+        // dispatch to global queue to stop internet access blocking the app
+        DispatchQueue.global(qos: .userInitiated).async {
+//        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+
             self.urlArray = PhotoLib.getPhotoURLs(lat: self.coordinate.latitude, lon: self.coordinate.longitude)
             self.removePhotos()
             self.getImgsFromURLs()
@@ -74,13 +58,16 @@ class CollectionViewController: UICollectionViewController {
             
             performUIUpdatesOnMain {
                 //stop indicator after view appear
-                self.activityIndicator.stopAnimating()
-            UIApplication.shared.endIgnoringInteractionEvents()
+                print("&&&&&&& stop activity Indicator on Main in Searching")
                 
+                self.activityIndicator.stopAnimating()
+                UIApplication.shared.endIgnoringInteractionEvents()
                 
                 self.collectionView?.reloadData()
+                self.editButtonItem.isEnabled = true
             }
         }
+        
         print("$$$$$$$$$ search button got completed,view is \(view) and self.view \(self.view)")
 
     }
@@ -95,17 +82,21 @@ class CollectionViewController: UICollectionViewController {
     }
     
     
+    
+    //MARK: Life Cycles
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = selectedItem.title
-        //MARK: - set up indicator
+        //MARK: - set up indicator in ViewDidLoad
+        print("&&&&&&& Start activity Indicator in ViewDidLoad")
+
         activityIndicator.center = view.center
         activityIndicator.hidesWhenStopped = true
         activityIndicator.activityIndicatorViewStyle = .gray
         self.view.addSubview(activityIndicator)
         activityIndicator.startAnimating()
-//        UIApplication.shared.beginIgnoringInteractionEvents()
+        UIApplication.shared.beginIgnoringInteractionEvents()
 
         print("$$$$$$$$ viewDidLoad got called.    $$$$$$$$$$$")
         
@@ -132,16 +123,21 @@ class CollectionViewController: UICollectionViewController {
         
         // 3. filter & pick 24 random URLs to download images to photoArray which is data souce for collection view.
 
-        performUIUpdatesOnMain {
-            print("%%%% Call GCD to sumbit getImgsFromURLs()")
-            self.getImgsFromURLs()
-            self.collectionView?.reloadData()
-            //stop indicator after view appear
-            self.activityIndicator.stopAnimating()
-            UIApplication.shared.endIgnoringInteractionEvents()
+        
+        DispatchQueue.global(qos: .userInitiated).async {
             
-        }
+            print("%%%% Dispath getImgsFromURLs() to global Queue")
+            self.getImgsFromURLs()
 
+            performUIUpdatesOnMain {
+                self.collectionView?.reloadData()
+                //stop indicator after view appear
+                print("##########   Stop Indicator ViewDidLoad")
+                self.activityIndicator.stopAnimating()
+                UIApplication.shared.endIgnoringInteractionEvents()
+                
+            }
+        }
         
         print("!!!!! ViewDidLoad compelted, the coordinate of this Pin is \(coordinate.latitude) and \(coordinate.longitude) and the stored photos at this location is \(photoArray.count) and total URLs for this locaiton is \(urlArray.count)" )
     }
@@ -151,33 +147,8 @@ class CollectionViewController: UICollectionViewController {
         print("$$$$$$$$   viewWillAppear got called  $$$$$$")
 
     }
+    
     override func viewDidAppear(_ animated: Bool) {
-        
-        print("$$$$$$$$   viewDidAppear got called  $$$$$$")
-        
-//                //MARK: Prepare data for collection view.
-//                // 1. fetch photos from context to photoArray to show stored Photos
-//                fetchPhotos()
-//
-//                // 2. get all URLs for this location(selectedItem)
-//                urlArray = PhotoLib.getPhotoURLs(lat: selectedItem.latitude, lon: selectedItem.longitude)
-//
-//                // 3. filter & pick 15 random URLs to download images to photoArray which is data souce for collection view.
-////                getImgsFromURLs()
-        
-        
-//        performUIUpdatesOnMain {
-//            print("%%%% Call GCD to sumbit getImgsFromURLs()")
-//            self.getImgsFromURLs()
-//            self.collectionView?.reloadData()
-//            //stop indicator after view appear
-//            self.activityIndicator.stopAnimating()
-//            UIApplication.shared.endIgnoringInteractionEvents()
-//
-//        }
-
-        
-        
         
         print("!!!!! ViewDidAppear compelted, the coordinate of this Pin is \(coordinate.latitude) and \(coordinate.longitude) and the stored photos at this location is \(photoArray.count) and total URLs for this locaiton is \(urlArray.count)" )
     }
@@ -189,37 +160,16 @@ class CollectionViewController: UICollectionViewController {
         print("%%%%%%%%%%  numberOfItem got trigger %%%%%%%%%%%%%% ")
 
         return photoArray.count
-//        return filteredURLs.count
         
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell", for: indexPath) as! CollectionViewCell
-        
+        cell.imageView.image = UIImage(data: self.photoArray[indexPath.row].image!)
+
 //        cell.imageView.image = UIImage(named: "finn") //finn is local image
-//        cell.imageView.image = UIImage(data: photoArray[indexPath.row].image!)
 
-//        //set indicator inside cell
-//        cell.activityIndicator.center = view.center
-//        cell.activityIndicator.hidesWhenStopped = true
-//        cell.activityIndicator.activityIndicatorViewStyle = .whiteLarge
-//        self.view.addSubview(activityIndicator)
-//        cell.activityIndicator.startAnimating()
-
-        performUIUpdatesOnMain {
-            //set indicator inside cell
-            cell.activityIndicator.center = self.view.center
-            cell.activityIndicator.hidesWhenStopped = true
-            cell.activityIndicator.activityIndicatorViewStyle = .whiteLarge
-            self.view.addSubview(self.activityIndicator)
-            cell.activityIndicator.startAnimating()
-
-            cell.imageView.image = UIImage(data: self.photoArray[indexPath.row].image!)
-//            cell.activityIndicator.stopAnimating()
-        }
         
-        cell.activityIndicator.stopAnimating()
-
         print("%%%%%%%%%%  cellForItemAt got trigger %%%%%%%%%%%%%% ")
 
         return cell
@@ -310,7 +260,7 @@ class CollectionViewController: UICollectionViewController {
             print("!!!!!!no photos in Context for this Pin, so we can get Flickr photos ")
             
             if urlArrayCount == 0 {
-                showMessage(title: "Flickr doesn't have photos for this location", message: "Pick another Location")
+                Helper.showMessage(title: "Flickr doesn't have photos for this location", message: "Pick another Location", view: self)
                 print("@@@@@@@@@@  can't find any pictures at this Pin")
             } else {
                 
@@ -320,7 +270,7 @@ class CollectionViewController: UICollectionViewController {
                 for index in 0 ..< numberofShowingPhotos {
                     let randomIndex = Int(arc4random()) % urlArrayCount
                     let randomURL = urlArray[randomIndex] // randomURL is PhotoURL type,contains iD/URL
-//                    print("@@@@@@   randomURL at index:\(index) is \(randomURL)")
+                    //                    print("@@@@@@   randomURL at index:\(index) is \(randomURL)")
                     
                     // store returned Image data to Photo entity
                     let newPhoto = Photo(context: self.context)
@@ -331,31 +281,13 @@ class CollectionViewController: UICollectionViewController {
                     // Build photoArray for Collection View Data Source
                     self.photoArray.append(newPhoto)
                     self.filteredURLs.append(randomURL)
-//                    let insertedIndexPath = IndexPath(item: photoArray.count, section: 0)
-//                    collectionView?.deleteItems(at: [insertedIndexPath])
-//                    collectionView?.insertItems(at: [insertedIndexPath])
-
-                    //                    collectionView?.reloadData()
                 }
             }
             
         } else {print("##### Found stored Photos for this location . NO need to download")}
         
-        //stop indicator after view appear
-        activityIndicator.stopAnimating()
-        UIApplication.shared.endIgnoringInteractionEvents()
-
     }
     
-    //Mark: - SHow message through Alert
-    func showMessage(title:String,message:String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-        //Cancel Button
-        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: { (actionHandler) in
-            alert.dismiss(animated: true, completion: nil)
-        }))
-        present(alert, animated: true, completion: nil)
-    }
 }
 
 

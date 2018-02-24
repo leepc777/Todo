@@ -121,6 +121,7 @@ class MapViewController: UIViewController  {
                 placemarks, error in
                 
                 // stop indicator after getting Placemarks/error in closure
+                print("##########   STOP Indicator in showLoactionOnMap")
                 self.activityIndicator.stopAnimating()
                 UIApplication.shared.endIgnoringInteractionEvents()
                 
