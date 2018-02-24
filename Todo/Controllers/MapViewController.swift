@@ -128,8 +128,10 @@ class MapViewController: UIViewController  {
                     let placemarks = placemarks,
                     let location = placemarks.first?.location
                     else {
-//                        self.label.text = "\(error!)"
-                        self.showAlert(title: "Failed to find the location", message: "\(error!)")
+                        
+//                        self.showAlert(title: "Failed to find the location", message: "\(error!)")
+                        
+                        self.showAlert(title: "The Internet is offline!", message: "Please turn on internet")
                         return
                 }
                 print("%%%%  CLGeocoder() return the placemarks: \(placemarks),\(location)")
@@ -145,7 +147,7 @@ class MapViewController: UIViewController  {
                 
                 annotation.coordinate = location.coordinate
                 annotation.title = mapItem.name
-                annotation.subtitle = "Tap Car to open Map App"
+                annotation.subtitle = "Tap Car to Show Navigation"
                 annotations.append(annotation)
                 
                 
@@ -181,10 +183,10 @@ extension MapViewController: MKMapViewDelegate {
     // MARK: Wire two buttons to the pin to call out
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?{
-        print("&&&   mapView viewFor annotation got called")
         let reuseId = "pin"
         var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
-        
+        print("&&&   mapView viewFor annotation got called,\(pinView)")
+
         if pinView == nil {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
             pinView!.pinTintColor = UIColor.orange
@@ -193,6 +195,7 @@ extension MapViewController: MKMapViewDelegate {
             
             //Setup up two buttons
             pinView!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            
             let smallSquare = CGSize(width: 30, height: 30)
             let button = UIButton(frame: CGRect(origin: CGPoint.zero, size: smallSquare))
             button.setBackgroundImage(UIImage(named: "car"), for: [])
@@ -212,24 +215,12 @@ extension MapViewController: MKMapViewDelegate {
         
         if control == view.rightCalloutAccessoryView {
             print("$$$   control is at right")
-//            let app = UIApplication.shared
             
             if let coordinate = view.annotation?.coordinate {
                 self.coordinate = coordinate
                 performSegue(withIdentifier: "goToCollection", sender: self)
             }
             
-//            if let toOpen = view.annotation?.subtitle! {
-//                var stringURL = toOpen
-//                if !stringURL.hasPrefix("http") {
-//                    stringURL = "https://"+stringURL
-//                }
-//                guard let url = URL(string:stringURL) else {
-//                    print("$$$  URL() return NIL")
-//                    return
-//                }
-//                app.open(url, options: [:], completionHandler: nil)
-//            }
         }
         
         if control == view.leftCalloutAccessoryView {

@@ -37,34 +37,50 @@ class CollectionViewController: UICollectionViewController {
 
         print("$$$$$$$$$ search button got tapped,view is \(view) and self.view \(self.view)")
 
-        //MARK: - set up indicator
-        activityIndicator.center = view.center
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.activityIndicatorViewStyle = .whiteLarge
-        self.view.addSubview(activityIndicator)
-        activityIndicator.startAnimating()
-        UIApplication.shared.beginIgnoringInteractionEvents()
+//        //MARK: - set up indicator
+//        activityIndicator.center = view.center
+//        activityIndicator.hidesWhenStopped = true
+//        activityIndicator.activityIndicatorViewStyle = .whiteLarge
+//        self.view.addSubview(activityIndicator)
+//        activityIndicator.startAnimating()
+//        UIApplication.shared.beginIgnoringInteractionEvents()
 
-        performUIUpdatesOnMain {
+//        performUIUpdatesOnMain {
+//            self.urlArray = PhotoLib.getPhotoURLs(lat: self.coordinate.latitude, lon: self.coordinate.longitude)
+//            self.removePhotos()
+//            self.getImgsFromURLs()
+//
+//            //stop indicator after view appear
+//            self.activityIndicator.stopAnimating()
+//            UIApplication.shared.endIgnoringInteractionEvents()
+//        }
+        
+        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+            
+            performUIUpdatesOnMain {
+            //MARK: - set up indicator
+            self.activityIndicator.center = self.view.center
+            self.activityIndicator.hidesWhenStopped = true
+            self.activityIndicator.activityIndicatorViewStyle = .whiteLarge
+            self.view.addSubview(self.activityIndicator)
+            self.activityIndicator.startAnimating()
+            UIApplication.shared.beginIgnoringInteractionEvents()
+            }
+            
             self.urlArray = PhotoLib.getPhotoURLs(lat: self.coordinate.latitude, lon: self.coordinate.longitude)
             self.removePhotos()
             self.getImgsFromURLs()
             
-            //stop indicator after view appear
-            self.activityIndicator.stopAnimating()
+            
+            performUIUpdatesOnMain {
+                //stop indicator after view appear
+                self.activityIndicator.stopAnimating()
             UIApplication.shared.endIgnoringInteractionEvents()
-
+                
+                
+                self.collectionView?.reloadData()
+            }
         }
-//        urlArray = PhotoLib.getPhotoURLs(lat: selectedItem.latitude, lon: selectedItem.longitude)
-//        removePhotos()
-//        getImgsFromURLs()
-        
-//        //stop indicator after view appear
-//        activityIndicator.stopAnimating()
-//        UIApplication.shared.endIgnoringInteractionEvents()
-
-        collectionView?.reloadData()
-        
         print("$$$$$$$$$ search button got completed,view is \(view) and self.view \(self.view)")
 
     }
@@ -114,8 +130,7 @@ class CollectionViewController: UICollectionViewController {
         // 2. get all URLs for this location(selectedItem)
         urlArray = PhotoLib.getPhotoURLs(lat: coordinate.latitude, lon: coordinate.longitude)
         
-        // 3. filter & pick 15 random URLs to download images to photoArray which is data souce for collection view.
-        //                getImgsFromURLs()
+        // 3. filter & pick 24 random URLs to download images to photoArray which is data souce for collection view.
 
         performUIUpdatesOnMain {
             print("%%%% Call GCD to sumbit getImgsFromURLs()")
@@ -281,9 +296,9 @@ class CollectionViewController: UICollectionViewController {
 
 //MARK:  fitler the URLs and call PhotoLib Class to download images.Then store to Context and photoArray
 /*
-1. if there No photos in Core Data for this pin, download UPTO 15 random photos from Flickr.
+1. if there No photos stored in Core Data for this pin, download UPTO 24 random photos from Flickr.
 2. if there is Zero photo for this Pin from Flickr. Show Aler View to info user no photos are avabile.
-3. if there is less than 15 photos avabile from Flickr. Then download all those photos.
+3. if there is less than 24 photos avabile from Flickr. Then download all those photos.
 */
 
     func getImgsFromURLs() {
@@ -299,7 +314,7 @@ class CollectionViewController: UICollectionViewController {
                 print("@@@@@@@@@@  can't find any pictures at this Pin")
             } else {
                 
-                // set the max number of photos showing in the collecition view as 15
+                // set the max number of photos showing in the collecition view as 24
                 let numberofShowingPhotos = urlArray.count<24 ? urlArray.count:24
                 print ("@@@@@@@@@   Flickr has \(urlArray.count) pictures for this location")
                 for index in 0 ..< numberofShowingPhotos {
