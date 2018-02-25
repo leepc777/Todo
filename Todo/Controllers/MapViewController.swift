@@ -25,6 +25,7 @@ class MapViewController: UIViewController  {
     var activityIndicator = UIActivityIndicatorView()
     var selectedPin:MKPlacemark? = nil
     var coordinate : CLLocationCoordinate2D!
+    let reachability = Reachability()!
 
     var selectedCategory : Category? {
         
@@ -57,6 +58,43 @@ class MapViewController: UIViewController  {
         showLocationOnMap(place:(selectedItem?.title)!)
         
     }
+    
+    
+    //MARK: set Reachability in ViewWillAppear and ViewDidDisappear
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+//        let reachability = Reachability()!
+        NotificationCenter.default.addObserver(self, selector: #selector(reachabilityChanged), name: .reachabilityChanged, object: reachability)
+        do{
+            try reachability.startNotifier()
+        }catch{
+            print("could not start reachability notifier")
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        reachability.stopNotifier()
+        NotificationCenter.default.removeObserver(self, name: .reachabilityChanged, object: reachability)
+    }
+    
+    @objc func reachabilityChanged(note: Notification) {
+        
+        let reachability = note.object as! Reachability
+        
+        switch reachability.connection {
+        case .wifi:
+            //            displayError("Reachable via WiFi")
+            print("%%%   Reachable via WiFi")
+        case .cellular:
+            print("%%%   Reachable via Cellular")
+        case .none:
+            print("%%%   Network not reachable")
+            Helper.showMessage(title: "Network not reachable", message: "Please make sure Internet is on", view: self)
+            //            displayError("Network not reachable")
+        }
+    }
+
 
 }
     //MARK: - Seach Bar
