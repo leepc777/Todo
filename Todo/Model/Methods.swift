@@ -19,5 +19,28 @@ class Helper {
         }))
         view.present(alert, animated: true, completion: nil)
     }
+    
+    static func callAlert(stop:Bool,vc:UIViewController,activityIndicator:UIActivityIndicatorView) {
+        
+        //MARK: - set up indicator
+        activityIndicator.center = vc.view.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = .gray
+
+        if stop {
+            
+            //stop indicator after view appear
+            print("&&&&&&& stop activity Indicator in callAlert()")
+            activityIndicator.stopAnimating()
+            UIApplication.shared.endIgnoringInteractionEvents()
+
+        } else {
+            print("&&&&&&& Start activity Indicator in callAlert()")
+            vc.view.addSubview(activityIndicator)
+            activityIndicator.startAnimating()
+            UIApplication.shared.beginIgnoringInteractionEvents()
+
+        }
+    }
 
 }

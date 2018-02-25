@@ -109,30 +109,22 @@ class MapViewController: UIViewController  {
         func showLocationOnMap(place:String) {
             
             //set up indicator
-            activityIndicator.center = self.view.center
-            activityIndicator.hidesWhenStopped = true
-            activityIndicator.activityIndicatorViewStyle = .gray
-            self.view.addSubview(activityIndicator)
-            activityIndicator.startAnimating()
-            UIApplication.shared.beginIgnoringInteractionEvents()
-
+            Helper.callAlert(stop: false, vc: self, activityIndicator: self.activityIndicator)
             
             geocoder.geocodeAddressString(place) {
                 placemarks, error in
                 
                 // stop indicator after getting Placemarks/error in closure
                 print("##########   STOP Indicator in showLoactionOnMap")
-                self.activityIndicator.stopAnimating()
-                UIApplication.shared.endIgnoringInteractionEvents()
+                Helper.callAlert(stop: true, vc: self, activityIndicator: self.activityIndicator)
+
                 
                 guard
                     let placemarks = placemarks,
                     let location = placemarks.first?.location
                     else {
                         
-//                        self.showAlert(title: "Failed to find the location", message: "\(error!)")
-                        
-                        self.showAlert(title: "The Internet is offline!", message: "Please turn on internet")
+                        Helper.showMessage(title: "The Internet is offline!", message: "You need internet to show it on MAP", view: self)
                         return
                 }
                 print("%%%%  CLGeocoder() return the placemarks: \(placemarks),\(location)")
@@ -162,17 +154,6 @@ class MapViewController: UIViewController  {
             }
         }
         
-        
-        func showAlert (title:String,message:String) {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: { (actionHandler) in
-                alert.dismiss(animated: true, completion: nil)
-                
-            }))
-            self.present(alert, animated: true, completion: nil)
-            print("####   showAlert got called")
-        }
-
     }
 
 

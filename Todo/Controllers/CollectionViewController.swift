@@ -32,19 +32,14 @@ class CollectionViewController: UICollectionViewController {
     
     
     
-    //MARK: refresh Collection View
+    //MARK: refresh Collection View with new photos
     @objc func didTapSearchButton(sender: AnyObject){
 
         print("$$$$$$$$$ search button got tapped,view is \(view) and self.view \(self.view)")
 
         //MARK: - set up indicator
         print("&&&&&&& Start activity Indicator at Searching")
-        activityIndicator.center = view.center
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.activityIndicatorViewStyle = .whiteLarge
-        self.view.addSubview(activityIndicator)
-        activityIndicator.startAnimating()
-        UIApplication.shared.beginIgnoringInteractionEvents()
+        Helper.callAlert(stop: false, vc: self, activityIndicator: self.activityIndicator)
         editButtonItem.isEnabled = false
 
         // dispatch to global queue to stop internet access blocking the app
@@ -60,9 +55,7 @@ class CollectionViewController: UICollectionViewController {
                 //stop indicator after view appear
                 print("&&&&&&& stop activity Indicator on Main in Searching")
                 
-                self.activityIndicator.stopAnimating()
-                UIApplication.shared.endIgnoringInteractionEvents()
-                
+                Helper.callAlert(stop: true, vc: self,activityIndicator: self.activityIndicator)
                 self.collectionView?.reloadData()
                 self.editButtonItem.isEnabled = true
             }
@@ -91,13 +84,7 @@ class CollectionViewController: UICollectionViewController {
         //MARK: - set up indicator in ViewDidLoad
         print("&&&&&&& Start activity Indicator in ViewDidLoad")
 
-        activityIndicator.center = view.center
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.activityIndicatorViewStyle = .gray
-        self.view.addSubview(activityIndicator)
-        activityIndicator.startAnimating()
-        UIApplication.shared.beginIgnoringInteractionEvents()
-
+        Helper.callAlert(stop: false, vc: self, activityIndicator: self.activityIndicator)
         print("$$$$$$$$ viewDidLoad got called.    $$$$$$$$$$$")
         
         //setup up search and edit buttons
@@ -133,9 +120,7 @@ class CollectionViewController: UICollectionViewController {
                 self.collectionView?.reloadData()
                 //stop indicator after view appear
                 print("##########   Stop Indicator ViewDidLoad")
-                self.activityIndicator.stopAnimating()
-                UIApplication.shared.endIgnoringInteractionEvents()
-                
+                Helper.callAlert(stop: true, vc: self, activityIndicator: self.activityIndicator)
             }
         }
         
