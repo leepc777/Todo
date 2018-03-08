@@ -21,6 +21,7 @@ Also by tapping the pin on map, the info icon is to show Flickr photos about the
 * In driving mode,tap the item to show it on a MAP ( **MapKit** )
 * Show Flickr photos about the location. ( **REQS API Web services** )
 * Tap the location to open **MAP App** to show direction (GPS).
+* **GCD**, **multii-threaed** and **asynchonous codes** for internet access.
 * Build Super Class to contain duplicate codes for two Table View Controllers.
 
 ## Resource
