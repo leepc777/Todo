@@ -13,15 +13,17 @@ Also by tapping the pin on map, the info icon is to show Flickr photos about the
 
 
 ## Main Goals:
-* Easily to add Category and Items with auto correction keyboard.
+* Add Category and Items with auto correction keyboard.
 * **swipe** to delete ( **Cocoapods SwipeCellKit** ) . An UNDO button to undo the deletion.
 * use **Cocoapods Chameleon** to make App look good.
-* One tap to mark done and undone
+* Tap items to mark done and undone
+* Switch Edit mode and Driving mode by tapping tabs.
+* Build a single view controller class for both tabs view to reduce duplicate codes.
 * Store Data persistently ( **Core Data** )
-* In driving mode,tap the item to show it on a MAP ( **MapKit** )
+* Tap the item to show it on a MAP in driving mode ( **MapKit** )
 * Show Flickr photos about the location. ( **REQS API Web services** )
 * Tap the location to open **MAP App** to show direction (GPS).
-* **GCD**, **multii-threaed** and **asynchonous codes** for internet access.
+* **GCD**, **multi-threaded ** and **asynchronous codes** for internet access.
 * Build Super Class to contain duplicate codes for two Table View Controllers.
 
 ## Resource
