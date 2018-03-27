@@ -2,7 +2,7 @@
 //  MapViewController.swift
 //  Todo
 //
-//  Created by sam on 2/14/18.
+//  Created by Patrick on 2/14/18.
 //  Copyright © 2018 patrick. All rights reserved.
 //
 
@@ -50,6 +50,7 @@ class MapViewController: UIViewController  {
         
         title = selectedItem?.title
         
+        //set Keybaord type for search bar
         searchBar.keyboardType = UIKeyboardType.alphabet
         searchBar.autocorrectionType = UITextAutocorrectionType.yes
 
@@ -63,7 +64,6 @@ class MapViewController: UIViewController  {
     //MARK: set Reachability in ViewWillAppear and ViewDidDisappear
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        let reachability = Reachability()!
         NotificationCenter.default.addObserver(self, selector: #selector(reachabilityChanged), name: .reachabilityChanged, object: reachability)
         do{
             try reachability.startNotifier()
@@ -102,9 +102,6 @@ class MapViewController: UIViewController  {
         
         func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
             
-//            searchBar.keyboardType = UIKeyboardType.alphabet
-//            searchBar.autocorrectionType = UITextAutocorrectionType.yes
-            
             if searchBar.text == "" {
                 DispatchQueue.main.async {
                     searchBar.resignFirstResponder()
@@ -119,9 +116,7 @@ class MapViewController: UIViewController  {
     
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
             //        print("@@@ serachBar textDidChange func got call and text is\(searchBar.text)")
-//            searchBar.keyboardType = UIKeyboardType.alphabet
-//            searchBar.autocorrectionType = UITextAutocorrectionType.yes
-
+            
             if searchBar.text?.count == 0 {
                 //        if searchBar.text == "" {
                 
@@ -136,62 +131,8 @@ class MapViewController: UIViewController  {
 //                showLocationOnMap(place: searchText)
                 print("!!! searchBarSearchButtonClicked got call ")
                 
-                
-            }
-            
-        }
-        
-        
-        
-        //MARK: show Locaition on Map : geocoder.geocodeAddressString
-        func showLocationOnMap(place:String) {
-            
-            //set up indicator
-            Helper.callAlert(stop: false, vc: self, activityIndicator: self.activityIndicator)
-            
-            geocoder.geocodeAddressString(place) {
-                placemarks, error in
-                
-                // stop indicator after getting Placemarks/error in closure
-                print("##########   STOP Indicator in showLoactionOnMap")
-                Helper.callAlert(stop: true, vc: self, activityIndicator: self.activityIndicator)
-
-                
-                guard
-                    let placemarks = placemarks,
-                    let location = placemarks.first?.location
-                    else {
-                        
-                        Helper.showMessage(title: "The Internet is offline!", message: "You need internet to show it on MAP", view: self)
-                        return
-                }
-                print("%%%%  CLGeocoder() return the placemarks: \(placemarks),\(location)")
-                
-                self.mapView.removeAnnotations(self.mapView.annotations)
-                var annotations : [MKPointAnnotation] = []
-                let annotation = MKPointAnnotation()
-                
-                //convert CLPlacemark to MKPlacemark
-                self.selectedPin = MKPlacemark(placemark: placemarks.first!)
-                let mapItem = MKMapItem(placemark: self.selectedPin!)
-//                let urlString = String(describing: mapItem.url)
-                
-                annotation.coordinate = location.coordinate
-                annotation.title = mapItem.name
-                annotation.subtitle = "Tap Car to Show Navigation"
-                annotations.append(annotation)
-                
-                
-                
-                self.mapView.addAnnotations(annotations)
-                let span = MKCoordinateSpanMake(0.05, 0.05)
-                let region = MKCoordinateRegion(center: location.coordinate, span: span)
-                self.mapView.setRegion(region, animated: true)
-                self.view.endEditing(true) //close keyboard
-                
             }
         }
-        
     }
 
 
@@ -200,12 +141,61 @@ class MapViewController: UIViewController  {
 
 extension MapViewController: MKMapViewDelegate {
     
+    //MARK: show Locaition on Map : geocoder.geocodeAddressString
+    func showLocationOnMap(place:String) {
+        
+        //set up indicator
+        Helper.callAlert(stop: false, vc: self, activityIndicator: self.activityIndicator)
+        
+        geocoder.geocodeAddressString(place) {
+            placemarks, error in
+            
+            // stop indicator after getting Placemarks/error in closure
+            print("##########   STOP Indicator in showLoactionOnMap")
+            Helper.callAlert(stop: true, vc: self, activityIndicator: self.activityIndicator)
+            
+            
+            guard
+                let placemarks = placemarks,
+                let location = placemarks.first?.location
+                else {
+                    
+                    Helper.showMessage(title: "The Internet is offline!", message: "You need internet to show it on MAP", view: self)
+                    return
+            }
+            print("%%%%  CLGeocoder() return the placemarks: \(placemarks),\(location)")
+            
+            self.mapView.removeAnnotations(self.mapView.annotations)
+            var annotations : [MKPointAnnotation] = []
+            let annotation = MKPointAnnotation()
+            
+            //convert CLPlacemark to MKPlacemark
+            self.selectedPin = MKPlacemark(placemark: placemarks.first!)
+            let mapItem = MKMapItem(placemark: self.selectedPin!)
+            //                let urlString = String(describing: mapItem.url)
+            
+            annotation.coordinate = location.coordinate
+            annotation.title = mapItem.name
+            annotation.subtitle = "Tap Car to Show Navigation"
+            annotations.append(annotation)
+            
+            
+            
+            self.mapView.addAnnotations(annotations)
+            let span = MKCoordinateSpanMake(0.05, 0.05)
+            let region = MKCoordinateRegion(center: location.coordinate, span: span)
+            self.mapView.setRegion(region, animated: true)
+            self.view.endEditing(true) //close keyboard
+            
+        }
+    }
+
     // MARK: Wire two buttons to the pin to call out
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView?{
         let reuseId = "pin"
         var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
-        print("&&&   mapView viewFor annotation got called,\(pinView)")
+//        print("&&&   mapView viewFor annotation got called,\(pinView)")
 
         if pinView == nil {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
@@ -266,35 +256,6 @@ extension MapViewController: MKMapViewDelegate {
             mapItem.openInMaps(launchOptions: launchOptions)
         }
     }
-
-    
-    //Alert view(two bottons) triggered by left callout at Pins
-//    @objc func updateAlert (title:String,message:String) {
-//        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-//
-//        //Cancel button
-//        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: { (actionHandler) in
-//            alert.dismiss(animated: true, completion: nil)
-//        }))
-//
-//        //Update button : to store personal info back to cloud
-//        alert.addAction(UIAlertAction(title: "Update", style: UIAlertActionStyle.default, handler: { (actionHandler) in
-//
-//            self.activityIndicator.startAnimating()
-//            UIApplication.shared.beginIgnoringInteractionEvents()
-//
-//
-//            alert.dismiss(animated: true, completion: nil)
-//            self.dismiss(animated: true, completion: nil)//back to tabview after successful update
-//        }))
-//
-//        self.present(alert, animated: true, completion: nil)
-//    }
-//
-////    deinit {
-////        print("&&&&&  AddPinsViewController got deallocated  ")
-////    }
-//
 
     
 }

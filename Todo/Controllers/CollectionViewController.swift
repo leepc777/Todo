@@ -1,6 +1,6 @@
 //
 //  CollectionViewController.swift
-//  VirtualTourist
+//  based on my VirtualTourist
 //
 //  Created by Patrick on 2/8/18.
 //  Copyright © 2018 patrick. All rights reserved.
@@ -13,9 +13,9 @@ import MapKit
 class CollectionViewController: UICollectionViewController {
 
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    var photoArray = [Photo]()
-    var filteredURLs = [PhotoURL]()
-    var urlArray = [PhotoURL]()
+    var photoArray = [Photo]() // array of Photo Class
+    var filteredURLs = [PhotoURL]() // store filtered URLs
+    var urlArray = [PhotoURL]() // store all downloaded images's URL
     let activityIndicator = UIActivityIndicatorView()
 
     var selectedItem : Item! {
@@ -102,27 +102,31 @@ class CollectionViewController: UICollectionViewController {
         
         
         //MARK: Prepare data for collection view.
-        // 1. fetch photos from context to photoArray to show stored Photos
+        // 1. fetch photos from context to photoArray to show stored Photos for the selected items
         fetchPhotos()
         
-        // 2. get all URLs for this location(selectedItem)
-        urlArray = PhotoLib.getPhotoURLs(lat: coordinate.latitude, lon: coordinate.longitude)
-        
-        // 3. filter & pick 24 random URLs to download images to photoArray which is data souce for collection view.
-
-        
-        DispatchQueue.global(qos: .userInitiated).async {
+        // **fix** 2 and 3 can be ignored when photoArray is NO returned empty. Don't need to overwrite local stored photos unless by tapping search-button.
+        if photoArray.count == 0 {
             
-            print("%%%% Dispath getImgsFromURLs() to global Queue")
-            self.getImgsFromURLs()
-
-            performUIUpdatesOnMain {
-                self.collectionView?.reloadData()
-                //stop indicator after view appear
-                print("##########   Stop Indicator ViewDidLoad")
-                Helper.callAlert(stop: true, vc: self, activityIndicator: self.activityIndicator)
+            // 2. get all URLs for this location(selectedItem)
+            urlArray = PhotoLib.getPhotoURLs(lat: coordinate.latitude, lon: coordinate.longitude)
+            
+            // 3. filter & pick 24 random URLs to download images to photoArray which is data souce for collection view.
+            
+            
+            DispatchQueue.global(qos: .userInitiated).async {
+                
+                print("%%%% Dispath getImgsFromURLs() to global Queue")
+                self.getImgsFromURLs()
+                
+                performUIUpdatesOnMain {
+                    self.collectionView?.reloadData()
+                    //stop indicator after view appear
+                    print("##########   Stop Indicator ViewDidLoad")
+                    Helper.callAlert(stop: true, vc: self, activityIndicator: self.activityIndicator)
+                }
             }
-        }
+        } else {Helper.callAlert(stop: true, vc: self, activityIndicator: self.activityIndicator)}
         
         print("!!!!! ViewDidLoad compelted, the coordinate of this Pin is \(coordinate.latitude) and \(coordinate.longitude) and the stored photos at this location is \(photoArray.count) and total URLs for this locaiton is \(urlArray.count)" )
     }
@@ -203,7 +207,7 @@ class CollectionViewController: UICollectionViewController {
     
     //MARK: - Model Manupulation Methods
 
-    // Read data from store to itemArray,default is reading out All Items belonging to same Category selectedItem
+    // Read data from store to photoArray,default is reading out All Items belonging to same Category selectedItem
     //MARK: Fetch Photos
     func fetchPhotos(with request:NSFetchRequest<Photo> = Photo.fetchRequest(), predicate:NSPredicate?=nil) {
         
@@ -254,10 +258,10 @@ class CollectionViewController: UICollectionViewController {
                 print ("@@@@@@@@@   Flickr has \(urlArray.count) pictures for this location")
                 for index in 0 ..< numberofShowingPhotos {
                     let randomIndex = Int(arc4random()) % urlArrayCount
-                    let randomURL = urlArray[randomIndex] // randomURL is PhotoURL type,contains iD/URL
+                    let randomURL = urlArray[randomIndex] // randomURL is PhotoURL Class type,contains iD/URL
                     //                    print("@@@@@@   randomURL at index:\(index) is \(randomURL)")
                     
-                    // store returned Image data to Photo entity
+                    // Locally store returned Online Image data to Photo entity
                     let newPhoto = Photo(context: self.context)
                     newPhoto.image = PhotoLib.getDataFromURL(urlString: randomURL.url_m)
                     newPhoto.id = randomURL.id

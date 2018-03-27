@@ -1,6 +1,7 @@
 //
 //  Methods.swift
 //  Todo
+//  Store reusable methods
 //
 //  Created by Patrick on 2/23/18.
 //  Copyright © 2018 patrick. All rights reserved.

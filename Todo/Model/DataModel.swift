@@ -55,7 +55,7 @@ class PhotoLib {
 //        return newResult
 //    }
     
-    //build URL
+    //build a URL by using URLQuery. This 1st request HTTP URL to Fickr.Flickr will return JSON which has the url_m for all photos matching to the location.
     class func buildRequestURL(lat:Double=0,lon:Double=0,numberOfPage:String = "1") -> URL {
         
 //        let numberOfPage : Int
@@ -91,13 +91,13 @@ class PhotoLib {
     
     // Send URL and Parse returned JSON data
     private class func sendReguest(request:URL,lat:Double=0,lon:Double=0) -> [PhotoURL]{
-        
+        print("1st Requested HTTP url to Flickr is \(request)")
         var results = [PhotoURL]()
         
         if let data = try? Data(contentsOf: request) {
             let json = try? JSON(data:data)
             if json!["stat"].stringValue == "ok" {
-                if json!["photos"]["pages"] > 1 {
+                if json!["photos"]["pages"] > 1 { //if more than 1 page of images matching this location
                     print("$$$$$$$$$$   there are more than one pages !")
                     let maxPage = json!["photos"]["pages"].intValue
                     let randomPage = Int(arc4random()) % maxPage
@@ -153,7 +153,7 @@ class PhotoLib {
 //    }
 
     
-    // Load Image from URL
+    // Load Images from URL
     static func getDataFromURL(urlString:String) -> Data{
         let url = URL(string:urlString)!
         var returnData = Data()
