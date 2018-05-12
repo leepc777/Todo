@@ -44,6 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
+        print("%%%%  Lazy persistenContainer got called in AppDelegate")
+
         return container
     }()
     

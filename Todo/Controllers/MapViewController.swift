@@ -145,14 +145,14 @@ extension MapViewController: MKMapViewDelegate {
     func showLocationOnMap(place:String) {
         
         //set up indicator
-        Helper.callAlert(stop: false, vc: self, activityIndicator: self.activityIndicator)
+        Helper.setActIndicator(stop: false, vc: self, activityIndicator: self.activityIndicator)
         
         geocoder.geocodeAddressString(place) {
             placemarks, error in
             
             // stop indicator after getting Placemarks/error in closure
             print("##########   STOP Indicator in showLoactionOnMap")
-            Helper.callAlert(stop: true, vc: self, activityIndicator: self.activityIndicator)
+            Helper.setActIndicator(stop: true, vc: self, activityIndicator: self.activityIndicator)
             
             
             guard

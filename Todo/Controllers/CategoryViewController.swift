@@ -30,7 +30,6 @@ class CategoryViewController: SwipeTableViewController {
             isDriving = false
         }
 
-
     }
     
     //MARK: write unsaved changes in context to store before leaving CategoryVC.
@@ -42,11 +41,12 @@ class CategoryViewController: SwipeTableViewController {
 //        navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : ContrastColorOf(FlatSkyBlue(), returnFlat: true)]
         navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : ContrastColorOf(FlatSkyBlue(), returnFlat: true)]
         
-        print("&&&&&&& the current Tab in Category List is \(navigationController?.tabBarItem.tag)")
-//        loadData()
+        print("&&& CategoryVC viewWillAppear,the current TabBar tag is \(navigationController?.tabBarItem.tag)")
+        loadData()
     }
     override func viewWillDisappear(_ animated: Bool) {
-//        saveData() //actually AppDelegate will do the saving before app closing
+        saveData() //actually AppDelegate will do the saving but we want it save to store when switching between ToDo and Driving mode.
+        print(" $$$  Category VC will Disappear")
     }
 
     //MARK: - Add New Categories

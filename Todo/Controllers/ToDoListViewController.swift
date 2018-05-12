@@ -175,7 +175,7 @@ class ToDoListViewController: SwipeTableViewController {
             textField = alertTextField
         }
         
-        //MARK Action for UIAlert,what will ahppen once user clicks Add Item
+        //MARK: - Action for UIAlert,what will ahppen once user clicks Add Item
 
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
@@ -214,10 +214,11 @@ class ToDoListViewController: SwipeTableViewController {
     }
    
     
-    // Read data from store to itemArray,default inputs is reading out All Items belonging to same selectedCategory
+    // Load data from store to itemArray,default inputs is reading out All Items belonging to same selectedCategory
+    
     func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest(), predicate:NSPredicate?=nil) {
         
-        //  item has parentCategory property which is a Cateory Type
+        //  item has parentCategory property which is a Category Type
 //        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", (selectedCategory?.name)!)
         
         let categoryPredicate = NSPredicate(format: "parentCategory == %@", selectedCategory!)
@@ -258,7 +259,7 @@ class ToDoListViewController: SwipeTableViewController {
 extension ToDoListViewController : UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
+
         if searchBar.text == "" {
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()

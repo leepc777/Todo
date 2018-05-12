@@ -21,7 +21,7 @@ class Helper {
         view.present(alert, animated: true, completion: nil)
     }
     
-    static func callAlert(stop:Bool,vc:UIViewController,activityIndicator:UIActivityIndicatorView) {
+    static func setActIndicator(stop:Bool,vc:UIViewController,activityIndicator:UIActivityIndicatorView) {
         
         //MARK: - set up indicator
         activityIndicator.center = vc.view.center

@@ -39,7 +39,7 @@ class CollectionViewController: UICollectionViewController {
 
         //MARK: - set up indicator
         print("&&&&&&& Start activity Indicator at Searching")
-        Helper.callAlert(stop: false, vc: self, activityIndicator: self.activityIndicator)
+        Helper.setActIndicator(stop: false, vc: self, activityIndicator: self.activityIndicator)
         editButtonItem.isEnabled = false
 
         // dispatch to global queue to stop internet access blocking the app
@@ -55,7 +55,7 @@ class CollectionViewController: UICollectionViewController {
                 //stop indicator after view appear
                 print("&&&&&&& stop activity Indicator on Main in Searching")
                 
-                Helper.callAlert(stop: true, vc: self,activityIndicator: self.activityIndicator)
+                Helper.setActIndicator(stop: true, vc: self,activityIndicator: self.activityIndicator)
                 self.collectionView?.reloadData()
                 self.editButtonItem.isEnabled = true
             }
@@ -84,7 +84,7 @@ class CollectionViewController: UICollectionViewController {
         //MARK: - set up indicator in ViewDidLoad
         print("&&&&&&& Start activity Indicator in ViewDidLoad")
 
-        Helper.callAlert(stop: false, vc: self, activityIndicator: self.activityIndicator)
+        Helper.setActIndicator(stop: false, vc: self, activityIndicator: self.activityIndicator)
         print("$$$$$$$$ viewDidLoad got called.    $$$$$$$$$$$")
         
         //setup up search and edit buttons
@@ -123,10 +123,10 @@ class CollectionViewController: UICollectionViewController {
                     self.collectionView?.reloadData()
                     //stop indicator after view appear
                     print("##########   Stop Indicator ViewDidLoad")
-                    Helper.callAlert(stop: true, vc: self, activityIndicator: self.activityIndicator)
+                    Helper.setActIndicator(stop: true, vc: self, activityIndicator: self.activityIndicator)
                 }
             }
-        } else {Helper.callAlert(stop: true, vc: self, activityIndicator: self.activityIndicator)}
+        } else {Helper.setActIndicator(stop: true, vc: self, activityIndicator: self.activityIndicator)}
         
         print("!!!!! ViewDidLoad compelted, the coordinate of this Pin is \(coordinate.latitude) and \(coordinate.longitude) and the stored photos at this location is \(photoArray.count) and total URLs for this locaiton is \(urlArray.count)" )
     }
