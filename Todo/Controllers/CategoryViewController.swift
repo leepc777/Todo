@@ -146,6 +146,7 @@ class CategoryViewController: SwipeTableViewController {
     override func updateModel(at indexPath: IndexPath) {
         self.context.delete(self.categoryArray[indexPath.row])
         self.categoryArray.remove(at: indexPath.row)
+//        tableView.reloadData()
         print("&&&&&& current VC is \(self) doing updateModel overrided in CategoryVC")
 
     }
@@ -155,6 +156,8 @@ class CategoryViewController: SwipeTableViewController {
         let cell = tableView.cellForRow(at: indexPath)
         cell?.accessoryType = .checkmark
         tableView.deselectRow(at: indexPath, animated: true)
+        tableView.reloadData()
+
         print("&&&&&& current VC is \(self) doing markCell overrided in CategoryVC")
 
     }

@@ -39,7 +39,7 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
         
         let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
             // handle action by updating model with deletion
-            print("### SwipeVC current VC is \(self) to run editActionsForRowAt , action is \(action)")
+            print("### SwipeVC current VC is \(self) to run required delegate method: editActionsForRowAt , action is \(action)")
             
             self.updateModel(at: indexPath)
                         
@@ -48,22 +48,22 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
         // customize the action appearance
         deleteAction.image = UIImage(named: "DeleteIcon")
         
-        let markAction = SwipeAction(style: .default, title: "Marked") { (action, indexPath) in
-            print("%%% SwipeVC, current VC is \(self) running editActionsForRowAt from Chemeleon at indexPath:\(indexPath),action is \(action)")
+        let markAction = SwipeAction(style: .default, title: nil) { (action, indexPath) in
+            print("%%% SwipeVC, current VC is \(self) running required delegate method:editActionsForRowAt from Chemeleon at indexPath:\(indexPath),action is \(action)")
             self.markCell(at: indexPath)
         
         }
         
-        markAction.image = UIImage(named:"check")
+        markAction.image = UIImage(named:"checked")
         markAction.backgroundColor = FlatBlue()
         return [deleteAction,markAction]
     }
     
     
-    // To return a SwipeTableOption to configure the actions created.
+    // Optional delegate method: To return a SwipeTableOption to configure the actions created.
     // when sliding the cell to left, delegate will run this function editActionsOptionsForRowAt
     func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeTableOptions {
-        print("### SwipeVC \(self) run editActinOptionsForRowAt at indexPath:\(indexPath)")
+        print("### SwipeVC \(self) run Optional Delegate method editActinOptionsForRowAt at indexPath:\(indexPath)")
 
         var options = SwipeTableOptions()
         options.expansionStyle = .destructive
